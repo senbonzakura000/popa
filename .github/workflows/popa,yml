@@ -15,10 +15,10 @@ jobs:
       
       - name: Fetch, extract, and commit PopAds libraries
         env:
-          POPA_ST: ${{ secrets.POPA_ST }}
-          POPA_FOO: ${{ secrets.POPA_FOO }}
-          POPA_CLOUD: ${{ secrets.POPA_CLOUD }}
-          POPA_FUN: ${{ secrets.POPA_FUN }}
+          POPA_CORNER_ST: ${{ secrets.POPA_CORNER_ST }}
+          POPA_CORNER_FOO: ${{ secrets.POPA_CORNER_FOO }}
+          POPA_CORNER_CLOUD: ${{ secrets.POPA_CORNER_CLOUD }}
+          POPA_CORNER_FUN: ${{ secrets.POPA_CORNER_FUN }}
 
           POPA_NINJA_CLOUD: ${{ secrets.POPA_NINJA_CLOUD }}
           POPA_NINJA_FUN: ${{ secrets.POPA_NINJA_FUN }}
@@ -34,10 +34,10 @@ jobs:
 
         run: |
           POPA_VARS=(
-            POPA_ST
-            POPA_FOO
-            POPA_CLOUD
-            POPA_FUN
+            POPA_CORNER_ST
+            POPA_CORNER_FOO
+            POPA_CORNER_CLOUD
+            POPA_CORNER_FUN
             POPA_NINJA_XYZ
             POPA_NINJA_ONLINE
             POPA_GETSU_SPORTSEMBED
