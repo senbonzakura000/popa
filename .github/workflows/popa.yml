@@ -19,22 +19,17 @@ jobs:
         run: |
           # filename:website_id
           POPA_SITES=(
-            "popa_corner_st:XXXXXXX"
-            "popa_corner_foo:XXXXXXX"
-            "popa_corner_cloud:XXXXXXX"
-            "popa_corner_fun:XXXXXXX"
+            "popa_corner_st:5312775"
+            "popa_corner_foo:5312062"
+            "popa_corner_cloud:5312064"
+            "popa_corner_fun:5312067"
 
-            "popa_ninja_cloud:XXXXXXX"
-            "popa_ninja_fun:XXXXXXX"
+            "popa_getsu_sportsembed:5299831"
+            "popa_getsu_play2:5299815"
+            "popa_getsu_topembed:5299834"
+            "popa_getsu_amazon:5313190"
 
-            "popa_getsu_sportsembed:XXXXXXX"
-            "popa_getsu_gooz:XXXXXXX"
-            "popa_getsu_nick:XXXXXXX"
-            "popa_getsu_play2:XXXXXXX"
-            "popa_getsu_topembed:XXXXXXX"
-            "popa_getsu_amazon:XXXXXXX"
-
-            "popa_pande_amazon:XXXXXXX"
+            "popa_pande_amazon:5313192"
           )
           for entry in "${POPA_SITES[@]}"; do
             filename="${entry%%:*}"
