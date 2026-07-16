@@ -1,0 +1,69 @@
+name: Update PopAds Library
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update-library:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Fetch, extract, and commit PopAds libraries
+        env:
+          POPA_ST: ${{ secrets.POPA_ST }}
+          POPA_FOO: ${{ secrets.POPA_FOO }}
+          POPA_CLOUD: ${{ secrets.POPA_CLOUD }}
+          POPA_FUN: ${{ secrets.POPA_FUN }}
+
+          POPA_NINJA_CLOUD: ${{ secrets.POPA_NINJA_CLOUD }}
+          POPA_NINJA_FUN: ${{ secrets.POPA_NINJA_FUN }}
+
+          POPA_GETSU_SPORTSEMBED: ${{ secrets.POPA_GETSU_SPORTSEMBED }}
+          POPA_GETSU_GOOZ: ${{ secrets.POPA_GETSU_GOOZ }}
+          POPA_GETSU_NICK: ${{ secrets.POPA_GETSU_NICK }}
+          POPA_GETSU_PLAY2: ${{ secrets.POPA_GETSU_PLAY2 }}
+          POPA_GETSU_TOPEMBED: ${{ secrets.POPA_GETSU_TOPEMBED }}
+          POPA_GETSU_AMAZON: ${{ secrets.POPA_GETSU_AMAZON }}
+
+          POPA_PANDE_AMAZON: ${{ secrets.POPA_PANDE_AMAZON }}
+
+        run: |
+          POPA_VARS=(
+            POPA_ST
+            POPA_FOO
+            POPA_CLOUD
+            POPA_FUN
+            POPA_NINJA_XYZ
+            POPA_NINJA_ONLINE
+            POPA_GETSU_SPORTSEMBED
+            POPA_GETSU_GOOZ
+            POPA_GETSU_NICK
+            POPA_GETSU_PLAY2
+            POPA_GETSU_TOPEMBED
+            POPA_GETSU_AMAZON
+            POPA_PANDE_AMAZON
+          )
+
+          for var in "${POPA_VARS[@]}"; do
+            url="${!var}"
+            [ -z "$url" ] && continue
+
+            filename="$(echo "$var" | tr '[:upper:]' '[:lower:]')"
+
+            echo "Processing $var → ${filename}.js"
+            curl -f -o "${filename}_raw.js" "$url"
+            perl -0777 -ne 'print $1 if /<script[^>]*>(.*?)<\/script>/s' "${filename}_raw.js" > "${filename}.js"
+          done
+
+          rm -f *_raw.js
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add popads_*.js
+          git diff --staged --quiet || git commit -m "Update PopAds library"
+          git push
