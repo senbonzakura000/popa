@@ -8,62 +8,46 @@ permissions:
 jobs:
   update-library:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Fetch, extract, and commit PopAds libraries
         env:
-          POPA_CORNER_ST: ${{ secrets.POPA_CORNER_ST }}
-          POPA_CORNER_FOO: ${{ secrets.POPA_CORNER_FOO }}
-          POPA_CORNER_CLOUD: ${{ secrets.POPA_CORNER_CLOUD }}
-          POPA_CORNER_FUN: ${{ secrets.POPA_CORNER_FUN }}
-
-          POPA_NINJA_CLOUD: ${{ secrets.POPA_NINJA_CLOUD }}
-          POPA_NINJA_FUN: ${{ secrets.POPA_NINJA_FUN }}
-
-          POPA_GETSU_SPORTSEMBED: ${{ secrets.POPA_GETSU_SPORTSEMBED }}
-          POPA_GETSU_GOOZ: ${{ secrets.POPA_GETSU_GOOZ }}
-          POPA_GETSU_NICK: ${{ secrets.POPA_GETSU_NICK }}
-          POPA_GETSU_PLAY2: ${{ secrets.POPA_GETSU_PLAY2 }}
-          POPA_GETSU_TOPEMBED: ${{ secrets.POPA_GETSU_TOPEMBED }}
-          POPA_GETSU_AMAZON: ${{ secrets.POPA_GETSU_AMAZON }}
-
-          POPA_PANDE_AMAZON: ${{ secrets.POPA_PANDE_AMAZON }}
-
+          POPADS_API_KEY: ${{ secrets.POPADS_API_KEY }}
         run: |
-          POPA_VARS=(
-            POPA_CORNER_ST
-            POPA_CORNER_FOO
-            POPA_CORNER_CLOUD
-            POPA_CORNER_FUN
-            POPA_NINJA_XYZ
-            POPA_NINJA_ONLINE
-            POPA_GETSU_SPORTSEMBED
-            POPA_GETSU_GOOZ
-            POPA_GETSU_NICK
-            POPA_GETSU_PLAY2
-            POPA_GETSU_TOPEMBED
-            POPA_GETSU_AMAZON
-            POPA_PANDE_AMAZON
+          # filename:website_id
+          POPA_SITES=(
+            "popa_corner_st:XXXXXXX"
+            "popa_corner_foo:XXXXXXX"
+            "popa_corner_cloud:XXXXXXX"
+            "popa_corner_fun:XXXXXXX"
+
+            "popa_ninja_cloud:XXXXXXX"
+            "popa_ninja_fun:XXXXXXX"
+
+            "popa_getsu_sportsembed:XXXXXXX"
+            "popa_getsu_gooz:XXXXXXX"
+            "popa_getsu_nick:XXXXXXX"
+            "popa_getsu_play2:XXXXXXX"
+            "popa_getsu_topembed:XXXXXXX"
+            "popa_getsu_amazon:XXXXXXX"
+
+            "popa_pande_amazon:XXXXXXX"
           )
-
-          for var in "${POPA_VARS[@]}"; do
-            url="${!var}"
-            [ -z "$url" ] && continue
-
-            filename="$(echo "$var" | tr '[:upper:]' '[:lower:]')"
-
-            echo "Processing $var → ${filename}.js"
+          for entry in "${POPA_SITES[@]}"; do
+            filename="${entry%%:*}"
+            website_id="${entry##*:}"
+            [ -z "$website_id" ] && continue
+            url="https://www.popads.net/api/website_code?key=${POPADS_API_KEY}&website_id=${website_id}&tl=auto&aab=1&of=1"
+            echo "Processing $filename (website_id=$website_id) → ${filename}.js"
             curl -f -o "${filename}_raw.js" "$url"
             perl -0777 -ne 'print $1 if /<script[^>]*>(.*?)<\/script>/s' "${filename}_raw.js" > "${filename}.js"
           done
-
           rm -f *_raw.js
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add popads_*.js
+          git add popa_*.js
           git diff --staged --quiet || git commit -m "Update PopAds library"
           git push
